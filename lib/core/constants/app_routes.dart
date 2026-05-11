@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tag/feature/welcome/view/welcome_screen.dart';
 
 import '../../feature/onboard/controller/onboard_cubit.dart';
 import '../../main.dart';
@@ -15,6 +16,9 @@ class AppRoutes {
   ///
   static const String splash = '/splash';
   static const String onboard = '/onboard';
+  static const String welcome = '/welcome';
+  static const String login = '/login';
+  static const String signup = '/signup';
   static const String home = '/home';
 
   ///
@@ -22,11 +26,13 @@ class AppRoutes {
   ///
   static Map<String, WidgetBuilder> routes = {
     splash: (context) => const SplashScreen(),
-    // onboard: (context) =>  OnboardingScreen(),
     onboard: (context) => BlocProvider(
       create: (_) => OnboardingCubit(3),
       child: const OnboardingScreen(),
     ),
+    welcome: (context) => const WelcomeScreen(),
+    login: (context) => const WelcomeScreen(),
+    signup: (context) => const WelcomeScreen(),
     home: (context) => const HomeScreen(),
   };
 }

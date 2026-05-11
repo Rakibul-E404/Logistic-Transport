@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/constants/app_routes.dart';
-import '../../../shared/widget/gradient_arc_loader.dart';
+import '../../../shared/components/gradient_arc_loader.dart';
 import 'splash_cubit.dart';
 
 class SplashScreen extends StatelessWidget {
