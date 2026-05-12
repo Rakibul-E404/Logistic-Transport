@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tag/core/theme/app_text_style.dart';
 
+import '../../../core/constants/app_routes.dart';
 import '../../../shared/components/Custom_Elevated_Button.dart';
 import '../../../shared/components/custom_background.dart';
 
@@ -275,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       GestureDetector(
                         onTap: () {
                           // Navigate back to Welcome Screen or to Create Account
-                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, AppRoutes.createAccount);
                           debugPrint('Sign Up pressed');
                         },
                         child: Text(
