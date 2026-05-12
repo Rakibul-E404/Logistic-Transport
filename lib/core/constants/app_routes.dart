@@ -1,7 +1,9 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tag/feature/auth/view/login_screen.dart';
-import 'package:tag/feature/welcome/view/welcome_screen.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tag/feature/auth/view/create_account_screen.dart';
+import 'package:tag/feature/auth/view/login_screen.dart';
+import 'package:tag/feature/auth/view/otp_verify_screen.dart';
+import 'package:tag/feature/welcome/view/welcome_screen.dart';
 import '../../feature/onboard/controller/onboard_cubit.dart';
 import '../../main.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,8 @@ class AppRoutes {
   static const String onboard = '/onboard';
   static const String welcome = '/welcome';
   static const String login = '/login';
-  static const String signup = '/signup';
+  static const String createAccount = '/createAccount';
+  static const String otpVerify = '/otpVerify';
   static const String home = '/home';
 
   ///
@@ -33,7 +36,9 @@ class AppRoutes {
     ),
     welcome: (context) => const WelcomeScreen(),
     login: (context) => const LoginScreen(),
-    signup: (context) => const WelcomeScreen(),
+    createAccount: (context) => const CreateAccountScreen(),
+    otpVerify: (context) => const OtpVerificationScreen(),
     home: (context) => const HomeScreen(),
+
   };
 }

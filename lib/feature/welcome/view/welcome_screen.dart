@@ -57,14 +57,14 @@ class WelcomeScreen extends StatelessWidget {
 
               const Spacer(),
 
-              // Buttons Section
+              /// login Buttons Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
                     CustomElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, AppRoutes.login);
+                        Navigator.pushNamed(context, AppRoutes.login);
                       },
                       buttonText: 'Log in',
                       backgroundColor: const Color(0xFF1E3A5F),
@@ -77,13 +77,10 @@ class WelcomeScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(bottom: 16),
                     ),
 
-// Create Account Button
+              /// Create Account Button
                     CustomElevatedButton(
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => const CreateAccountScreen()), // 👈 Navigate to Sign Up
-                        // );
+                        Navigator.pushNamed(context, AppRoutes.createAccount);
                       },
                       buttonText: 'Create Account',
                       backgroundColor: Colors.white,
