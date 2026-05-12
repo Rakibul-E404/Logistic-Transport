@@ -4,6 +4,7 @@ import 'package:tag/feature/auth/view/create_account_screen.dart';
 import 'package:tag/feature/auth/view/login_screen.dart';
 import 'package:tag/feature/auth/view/otp_verify_screen.dart';
 import 'package:tag/feature/profile/view/profile_screen.dart';
+import 'package:tag/feature/report/view/report_screen.dart';
 import 'package:tag/feature/welcome/view/welcome_screen.dart';
 import '../../feature/home/view/home_screen.dart';
 import '../../feature/onboard/controller/onboard_cubit.dart';
@@ -25,6 +26,7 @@ class AppRoutes {
   static const String createAccount = '/createAccount';
   static const String otpVerify = '/otpVerify';
   static const String home = '/home';
+  static const String report = '/report';
   static const String profile = '/profile';
 
   ///
@@ -41,6 +43,7 @@ class AppRoutes {
     createAccount: (context) => const CreateAccountScreen(),
     otpVerify: (context) => const OtpVerificationScreen(),
     home: (context) => const HomeScreen(),
+    report: (context) => const ReportScreen(),
     profile: (context) => const ProfileScreen(),
 
   };
