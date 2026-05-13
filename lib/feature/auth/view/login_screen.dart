@@ -20,8 +20,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'a@gmail.com');
+  final _passwordController = TextEditingController(text: '123456');
   bool _obscurePassword = true;
 
   @override
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: AppTextStyle.BricolageGrotesque_24pt_Regular.copyWith(
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
-                            color: const Color(0xFF1E3A5F),
+                            color:  Colors.black,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        hintText: 'Enter your full name', // Keeping design text
+                        hintText: 'Enter your email',
                         hintStyle: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -246,8 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         debugPrint('Email: ${_emailController.text}');
                         debugPrint('Password: ${_passwordController.text}');
 
-                        // Example: Navigate to Home or Dashboard
-                        Navigator.pushNamed(context, AppRoutes.home);
+                        Navigator.pushNamed(context, AppRoutes.bottomNav);
                       }
                     },
                     buttonText: 'Log in',

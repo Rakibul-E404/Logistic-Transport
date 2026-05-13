@@ -7,6 +7,7 @@ import 'package:tag/feature/load/view/load_screen.dart';
 import 'package:tag/feature/profile/view/profile_screen.dart';
 import 'package:tag/feature/report/view/report_screen.dart';
 import 'package:tag/feature/welcome/view/welcome_screen.dart';
+import 'package:tag/shared/widget/bottom_nav.dart';
 import '../../feature/home/view/home_screen.dart';
 import '../../feature/onboard/controller/onboard_cubit.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String createAccount = '/createAccount';
   static const String otpVerify = '/otpVerify';
+  static const String bottomNav = '/bottomNav';
   static const String home = '/home';
   static const String load = '/load';
   static const String report = '/report';
@@ -44,6 +46,7 @@ class AppRoutes {
     login: (context) => const LoginScreen(),
     createAccount: (context) => const CreateAccountScreen(),
     otpVerify: (context) => const OtpVerificationScreen(),
+    bottomNav: (context) => const BottomNav(),
     home: (context) => const HomeScreen(),
     load: (context) => const LoadScreen(),
     report: (context) => const ReportScreen(),
