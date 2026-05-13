@@ -12,12 +12,6 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0; // Default to Load screen
 
-  // final List<Widget> _screens = [
-  //   const HomeScreen(),
-  //   const LoadScreen(),
-  //   const ReportScreen(),
-  //   const ProfileScreen(),
-  // ];
 
 
   late final List<Widget> _screens = [
