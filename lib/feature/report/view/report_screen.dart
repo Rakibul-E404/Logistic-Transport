@@ -1,317 +1,683 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({Key? key}) : super(key: key);
+  const ReportScreen({super.key});
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
 }
 
 class _ReportScreenState extends State<ReportScreen> {
-  // State for the toggle
   bool _isThisMonth = true;
 
-  // --- DATA ---
-  // Chart Data
-  final List<String> _weekDays = ['MON 21', 'TUE 22', 'WED 23', 'THU 24', 'FRI 25', 'SAT 26', 'SUN 27'];
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  bool _showCalendar = false;
 
-  // Random data simulation (Income, Expense)
-  final List<double> _incomeData = [1.8, 2.0, 1.9, 2.1, 2.0, 1.8, 2.2];
-  final List<double> _expenseData = [0.8, 0.9, 0.8, 0.9, 0.8, 0.9, 0.9];
+  // Current displayed week's start date (key for _allWeeklyData)
+  DateTime _currentWeekStart = DateTime.now();
+  DateTime _currentWeekEnd = DateTime.now();
 
-  // --- UI BUILD ---
+  // SAMPLE DATA FOR DIFFERENT WEEKS - keys are Monday dates in yyyy-MM-dd format
+  final Map<String, Map<String, dynamic>> _allWeeklyData = {
+    '2024-10-14': {
+      'totalProfit': 11800.0,
+      'growth': 8.2,
+      'incomeData': <double>[1.7, 1.9, 1.8, 2.0, 1.9, 1.7, 2.0],
+      'expenseData': <double>[0.8, 0.9, 0.8, 0.9, 0.8, 0.8, 0.9],
+      'weekDays': <String>[
+        'MON 14',
+        'TUE 15',
+        'WED 16',
+        'THU 17',
+        'FRI 18',
+        'SAT 19',
+        'SUN 20'
+      ],
+      'categories': {
+        'Fuel': {'amount': 4650.00, 'subtitle': '37% of total expenses'},
+        'Maintenance': {'amount': 1100.00, 'subtitle': 'Scheduled & ad-hoc repairs'},
+        'Tolls': {'amount': 580.00, 'subtitle': 'Electronic pass transponders'},
+        'Others': {'amount': 800.00, 'subtitle': 'Fleet & liability coverage'},
+      },
+    },
+    '2024-10-21': {
+      'totalProfit': 12450.0,
+      'growth': 12.5,
+      'incomeData': <double>[1.8, 2.0, 1.9, 2.1, 2.0, 1.8, 2.2],
+      'expenseData': <double>[0.8, 0.9, 0.8, 0.9, 0.8, 0.9, 0.9],
+      'weekDays': <String>[
+        'MON 21',
+        'TUE 22',
+        'WED 23',
+        'THU 24',
+        'FRI 25',
+        'SAT 26',
+        'SUN 27'
+      ],
+      'categories': {
+        'Fuel': {'amount': 4820.50, 'subtitle': '38% of total expenses'},
+        'Maintenance': {'amount': 1240.00, 'subtitle': 'Scheduled & ad-hoc repairs'},
+        'Tolls': {'amount': 612.20, 'subtitle': 'Electronic pass transponders'},
+        'Others': {'amount': 850.00, 'subtitle': 'Fleet & liability coverage'},
+      },
+    },
+    '2024-10-28': {
+      'totalProfit': 13200.0,
+      'growth': 15.2,
+      'incomeData': <double>[2.0, 2.2, 2.1, 2.3, 2.2, 2.0, 2.4],
+      'expenseData': <double>[0.9, 0.8, 0.9, 1.0, 0.9, 0.8, 0.9],
+      'weekDays': <String>[
+        'MON 28',
+        'TUE 29',
+        'WED 30',
+        'THU 31',
+        'FRI 01',
+        'SAT 02',
+        'SUN 03'
+      ],
+      'categories': {
+        'Fuel': {'amount': 5100.00, 'subtitle': '40% of total expenses'},
+        'Maintenance': {'amount': 980.00, 'subtitle': 'Scheduled & ad-hoc repairs'},
+        'Tolls': {'amount': 725.00, 'subtitle': 'Electronic pass transponders'},
+        'Others': {'amount': 920.00, 'subtitle': 'Fleet & liability coverage'},
+      },
+    },
+    '2024-11-04': {
+      'totalProfit': 11800.0,
+      'growth': 3.5,
+      'incomeData': <double>[1.7, 1.9, 1.8, 2.0, 1.9, 1.7, 2.1],
+      'expenseData': <double>[0.9, 1.0, 0.9, 1.0, 0.9, 1.0, 1.0],
+      'weekDays': <String>[
+        'MON 04',
+        'TUE 05',
+        'WED 06',
+        'THU 07',
+        'FRI 08',
+        'SAT 09',
+        'SUN 10'
+      ],
+      'categories': {
+        'Fuel': {'amount': 4950.00, 'subtitle': '39% of total expenses'},
+        'Maintenance': {'amount': 1500.00, 'subtitle': 'Scheduled & ad-hoc repairs'},
+        'Tolls': {'amount': 680.00, 'subtitle': 'Electronic pass transponders'},
+        'Others': {'amount': 790.00, 'subtitle': 'Fleet & liability coverage'},
+      },
+    },
+  };
+
+  // Sorted list of available week keys (Monday dates)
+  late final List<String> _sortedWeekKeys;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get all keys and sort them chronologically
+    _sortedWeekKeys = _allWeeklyData.keys.toList()..sort();
+
+    // Find the week that contains today's date or the closest past week
+    _currentWeekStart = _findClosestWeek(_selectedDay);
+    _updateWeekEnd();
+  }
+
+  void _updateWeekEnd() {
+    _currentWeekEnd = _currentWeekStart.add(const Duration(days: 6));
+  }
+
+  /// Finds the week start date (Monday) that contains the given date,
+  /// or the closest available week if not found
+  DateTime _findClosestWeek(DateTime date) {
+    // Get the Monday of the given date's week
+    DateTime targetMonday = date.subtract(Duration(days: date.weekday - 1));
+    String targetKey = DateFormat('yyyy-MM-dd').format(targetMonday);
+
+    // If exact week exists, use it
+    if (_allWeeklyData.containsKey(targetKey)) {
+      return targetMonday;
+    }
+
+    // Otherwise, find the closest available week
+    // Try to find the closest past week
+    for (int i = _sortedWeekKeys.length - 1; i >= 0; i--) {
+      DateTime weekStart = DateFormat('yyyy-MM-dd').parse(_sortedWeekKeys[i]);
+      if (weekStart.isBefore(targetMonday) || weekStart.isAtSameMomentAs(targetMonday)) {
+        return weekStart;
+      }
+    }
+
+    // If no past week, return the first available week
+    return DateFormat('yyyy-MM-dd').parse(_sortedWeekKeys.first);
+  }
+
+  /// Get the key for the current week start date
+  String _getCurrentWeekKey() {
+    return DateFormat('yyyy-MM-dd').format(_currentWeekStart);
+  }
+
+  /// Get data for the current week
+  Map<String, dynamic> _getCurrentWeekData() {
+    String key = _getCurrentWeekKey();
+    if (_allWeeklyData.containsKey(key)) {
+      return _allWeeklyData[key]!;
+    }
+    // Fallback: return first available data
+    return _allWeeklyData[_sortedWeekKeys.first]!;
+  }
+
+  /// Get current week index in the sorted list
+  int _getCurrentWeekIndex() {
+    return _sortedWeekKeys.indexOf(_getCurrentWeekKey());
+  }
+
+  /// Navigate to previous week (if available)
+  void _previousWeek() {
+    int currentIndex = _getCurrentWeekIndex();
+    if (currentIndex > 0) {
+      setState(() {
+        _currentWeekStart = DateFormat('yyyy-MM-dd').parse(_sortedWeekKeys[currentIndex - 1]);
+        _updateWeekEnd();
+        _selectedDay = _currentWeekStart;
+        _focusedDay = _currentWeekStart;
+      });
+    }
+  }
+
+  /// Navigate to next week (if available)
+  void _nextWeek() {
+    int currentIndex = _getCurrentWeekIndex();
+    if (currentIndex < _sortedWeekKeys.length - 1) {
+      setState(() {
+        _currentWeekStart = DateFormat('yyyy-MM-dd').parse(_sortedWeekKeys[currentIndex + 1]);
+        _updateWeekEnd();
+        _selectedDay = _currentWeekStart;
+        _focusedDay = _currentWeekStart;
+      });
+    }
+  }
+
+  /// Handle date selection from calendar
+  void _onDateSelected(DateTime selectedDay, DateTime focusedDay) {
+    setState(() {
+      _selectedDay = selectedDay;
+      _focusedDay = focusedDay;
+      _currentWeekStart = _findClosestWeek(selectedDay);
+      _updateWeekEnd();
+      _showCalendar = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentData = _getCurrentWeekData();
+
+    final List<String> weekDays = List<String>.from(currentData['weekDays'] ?? []);
+    final List<double> incomeData = List<double>.from(currentData['incomeData'] ?? []);
+    final List<double> expenseData = List<double>.from(currentData['expenseData'] ?? []);
+    final double totalProfit = (currentData['totalProfit'] ?? 0.0).toDouble();
+    final double growth = (currentData['growth'] ?? 0.0).toDouble();
+    final Map<String, dynamic> categories = (currentData['categories'] as Map<String, dynamic>? ?? {});
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7F9), // Light background
+      backgroundColor: const Color(0xFFF4F7F9),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Top Toggle Section
-              _buildToggleHeader(),
-              const SizedBox(height: 16),
-
-              // 2. Weekly Profit Insight Card
-              _buildInsightCard(),
-              const SizedBox(height: 16),
-
-              // 3. Category List (Scrollable)
-              _buildCategoryList(),
-            ],
-          ),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  _buildToggleHeader(),
+                  const SizedBox(height: 16),
+                  _buildInsightCard(
+                    weekDays: weekDays,
+                    incomeData: incomeData,
+                    expenseData: expenseData,
+                    totalProfit: totalProfit,
+                    growth: growth,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildCategoryList(categories),
+                ],
+              ),
+            ),
+            if (_showCalendar)
+              GestureDetector(
+                onTap: () => setState(() => _showCalendar = false),
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        margin: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text("Select Date", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                  IconButton(onPressed: () => setState(() => _showCalendar = false), icon: const Icon(Icons.close)),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                height: 400,
+                                child: TableCalendar(
+                                  firstDay: DateTime.utc(2020, 1, 1),
+                                  lastDay: DateTime.utc(2035, 12, 31),
+                                  focusedDay: _focusedDay.isBefore(DateTime.utc(2020, 1, 1))
+                                      ? DateTime.utc(2020, 1, 1)
+                                      : _focusedDay.isAfter(DateTime.utc(2035, 12, 31))
+                                      ? DateTime.utc(2035, 12, 31)
+                                      : _focusedDay,
+                                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                                  onDaySelected: _onDateSelected,
+                                  headerStyle: const HeaderStyle(formatButtonVisible: false, titleCentered: true),
+                                  daysOfWeekStyle: const DaysOfWeekStyle(
+                                    weekdayStyle: TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),
+                                    weekendStyle: TextStyle(fontWeight: FontWeight.w600, color: Colors.red),
+                                  ),
+                                  calendarStyle: CalendarStyle(
+                                    outsideDaysVisible: false,
+                                    weekendTextStyle: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+                                    todayDecoration: BoxDecoration(
+                                      color: const Color(0xFF1E3A5F).withValues(alpha: 0.25),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    selectedDecoration: const BoxDecoration(color: Color(0xFF1E3A5F), shape: BoxShape.circle),
+                                    selectedTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                  availableGestures: AvailableGestures.all,
+                                  startingDayOfWeek: StartingDayOfWeek.monday,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
 
-  // --- WIDGET: Toggle Header ---
   Widget _buildToggleHeader() {
     return Container(
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE5E9EF), // Greyish container
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: BoxDecoration(color: const Color(0xFFE5E9EF), borderRadius: BorderRadius.circular(12)),
       child: Row(
         children: [
-          // "This Month" Toggle
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => _isThisMonth = true),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: _isThisMonth ? Colors.white : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: _isThisMonth
-                      ? [BoxShadow(color: Colors.black12, blurRadius: 4, offset: const Offset(0, 2))]
-                      : [],
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  "This Month",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: _isThisMonth ? Colors.black : Colors.grey[500],
-                  ),
+                child: Center(
+                  child: Text("This Month", style: TextStyle(fontWeight: FontWeight.w600, color: _isThisMonth ? Colors.black : Colors.grey)),
                 ),
               ),
             ),
           ),
-          // "Last Month" Toggle
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => _isThisMonth = false),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: !_isThisMonth ? Colors.white : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: !_isThisMonth
-                      ? [BoxShadow(color: Colors.black12, blurRadius: 4, offset: const Offset(0, 2))]
-                      : [],
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Last Month",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: !_isThisMonth ? Colors.black : Colors.grey[500],
-                  ),
+                child: Center(
+                  child: Text("Last Month", style: TextStyle(fontWeight: FontWeight.w600, color: !_isThisMonth ? Colors.black : Colors.grey)),
                 ),
               ),
             ),
           ),
-          // Calendar Icon Button
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: const Offset(0, 2))],
-            ),
-            child: SvgPicture.asset(
-              'assets/icons/calendar.svg', // YOUR SVG HERE
-              width: 20,
-              height: 20,
-              color: Colors.grey[700],
-            ),
+          IconButton(
+            onPressed: () => setState(() => _showCalendar = true),
+            icon: SvgPicture.asset('assets/icons/calendar.svg', width: 22, height: 22),
           ),
         ],
       ),
     );
   }
 
-  // --- WIDGET: Insight Card (Chart) ---
-  Widget _buildInsightCard() {
+
+
+  Widget _buildInsightCard({
+    required List<String> weekDays,
+    required List<double> incomeData,
+    required List<double> expenseData,
+    required double totalProfit,
+    required double growth,
+  })
+  {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Text
+          // TITLE
           const Text(
             "WEEKLY PROFIT INSIGHT",
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey, letterSpacing: 0.5),
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
+            ),
           ),
-          const SizedBox(height: 8),
 
-          // Amounts Row
+          const SizedBox(height: 16),
+
+          // PROFIT AND GROWTH
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "\$12,450.00",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      _buildLegendDot(color: const Color(0xFF3B82F6)), // Blue
-                      const Text(" Income", style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
-                      const SizedBox(width: 12),
-                      _buildLegendDot(color: const Color(0xFFF59E0B)), // Orange
-                      const Text(" Expenses", style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                ],
+              Text(
+                "\$${NumberFormat('#,##0.00').format(totalProfit)}",
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  letterSpacing: -0.5,
+                ),
               ),
-              // Growth Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECFDF5),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.arrow_upward, size: 14, color: const Color(0xFF10B981)),
-                    const SizedBox(width: 2),
-                    const Text("+12.5%", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF10B981))),
+                    Icon(
+                      Icons.trending_up,
+                      color: Colors.green.shade600,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "+${growth.toStringAsFixed(1)}%",
+                      style: TextStyle(
+                        color: Colors.green.shade600,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
 
-          const SizedBox(height: 20),
 
-          // CHART
-          SizedBox(
-            height: 160,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceBetween,
-                maxY: 2.5,
-                barTouchData: BarTouchData(enabled: false), // Disable touch if not needed
-                titlesData: FlTitlesData(
-                  show: true,
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      getTitlesWidget: (value, meta) {
-                        // Map x-axis values to days
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            _weekDays[value.toInt()],
-                            style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500),
+          // LEGEND
+          Row(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF3B82F6),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Income",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 24),
+              Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF59E0B),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Expenses",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          // BAR CHART
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: SizedBox(
+              height: 180,
+              child: BarChart(
+                BarChartData(
+                  maxY: 2.5,
+                  gridData: const FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: const FlTitlesData(
+                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  ),
+                  barGroups: List.generate(
+                    weekDays.length,
+                        (index) {
+                      return BarChartGroupData(
+                        x: index,
+                        barsSpace: 3,
+                        barRods: [
+                          BarChartRodData(
+                            toY: index < incomeData.length ? incomeData[index] : 0,
+                            width: 7,
+                            color: const Color(0xFF3B82F6),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4),
+                            ),
                           ),
+                          BarChartRodData(
+                            toY: index < expenseData.length ? expenseData[index] : 0,
+                            width: 7,
+                            color: const Color(0xFFF59E0B),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  groupsSpace: 8,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // NAVIGATION WITH DATES AT BOTTOM
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // LEFT ARROW
+              GestureDetector(
+                onTap: _previousWeek,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 1.5),
+                  ),
+                  child: const Icon(
+                    Icons.chevron_left,
+                    size: 18,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+
+              // DAY LABELS - Aligned with bars
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      weekDays.length,
+                          (index) {
+                        final day = weekDays[index];
+                        final parts = day.split(' ');
+                        final dayName = parts[0];
+                        final dayNumber = parts.length > 1 ? parts[1] : '';
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              dayName,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              dayNumber,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
                         );
                       },
                     ),
                   ),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
-                gridData: const FlGridData(show: false),
-                borderData: FlBorderData(show: false),
-                barGroups: List.generate(7, (index) {
-                  return BarChartGroupData(
-                    x: index,
-                    barRods: [
-                      // Income Bar (Blue)
-                      BarChartRodData(
-                        toY: _incomeData[index],
-                        color: const Color(0xFF3B82F6),
-                        width: 6,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      // Expenses Bar (Orange)
-                      BarChartRodData(
-                        toY: _expenseData[index],
-                        color: const Color(0xFFF59E0B),
-                        width: 6,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                    barsSpace: 4, // Space between the two bars
-                  );
-                }),
               ),
-            ),
-          ),
 
-          // Navigation Arrows (Optional, purely UI based on image)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(Icons.arrow_circle_left_outlined),
-                Icon(Icons.arrow_circle_right_outlined),
-                // SvgPicture.asset('assets/icons/arrow_left.svg', width: 18, color: Colors.grey), // YOUR SVG
-                // SvgPicture.asset('assets/icons/arrow_right.svg', width: 18, color: Colors.grey), // YOUR SVG
-              ],
-            ),
+              // RIGHT ARROW
+              GestureDetector(
+                onTap: _nextWeek,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 1.5),
+                  ),
+                  child: const Icon(
+                    Icons.chevron_right,
+                    size: 18,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLegendDot({required Color color}) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
-  }
 
-  // --- WIDGET: Category List ---
-  Widget _buildCategoryList() {
+
+
+
+  Widget _buildCategoryList(Map<String, dynamic> categories) {
     return Column(
       children: [
         _buildCategoryCard(
           title: "Fuel",
-          amount: "\$4,820.50",
-          subtitle: "38% of total expenses",
+          amount: "\$${categories['Fuel']['amount']}",
+          subtitle: categories['Fuel']['subtitle'],
           svgAsset: 'assets/icons/fuel.svg',
         ),
         const SizedBox(height: 12),
         _buildCategoryCard(
           title: "Maintenance",
-          amount: "\$1,240.00",
-          subtitle: "Scheduled & ad-hoc repairs",
+          amount: "\$${categories['Maintenance']['amount']}",
+          subtitle: categories['Maintenance']['subtitle'],
           svgAsset: 'assets/icons/maintenance.svg',
         ),
         const SizedBox(height: 12),
         _buildCategoryCard(
           title: "Tolls",
-          amount: "\$612.20",
-          subtitle: "Electronic pass transponders",
+          amount: "\$${categories['Tolls']['amount']}",
+          subtitle: categories['Tolls']['subtitle'],
           svgAsset: 'assets/icons/tolls.svg',
         ),
         const SizedBox(height: 12),
         _buildCategoryCard(
           title: "Others",
-          amount: "\$850.00",
-          subtitle: "Fleet & liability coverage",
+          amount: "\$${categories['Others']['amount']}",
+          subtitle: categories['Others']['subtitle'],
           svgAsset: 'assets/icons/others.svg',
         ),
       ],
     );
   }
 
-  // --- WIDGET: Single Category Card ---
   Widget _buildCategoryCard({
     required String title,
     required String amount,
@@ -323,18 +689,13 @@ class _ReportScreenState extends State<ReportScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 5, offset: const Offset(0, 2)),
-        ],
       ),
       child: Row(
         children: [
-          // Icon Container
           Container(
-            width: 48,
-            height: 48,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
-              // color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -345,8 +706,7 @@ class _ReportScreenState extends State<ReportScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 16),
-          // Text Content
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,18 +716,26 @@ class _ReportScreenState extends State<ReportScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                     Text(
                       amount,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
