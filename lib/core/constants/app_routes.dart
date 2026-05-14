@@ -1,8 +1,18 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tag/feature/welcome/view/welcome_screen.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tag/feature/auth/view/create_account_screen.dart';
+import 'package:tag/feature/auth/view/login_screen.dart';
+import 'package:tag/feature/auth/view/otp_verify_screen.dart';
+import 'package:tag/feature/home/bill_of_loading/bill_of_loading.dart';
+import 'package:tag/feature/home/model/camera_scanner.dart';
+import 'package:tag/feature/load/view/load_screen.dart';
+import 'package:tag/feature/notification/view/notification_screen.dart';
+import 'package:tag/feature/profile/view/profile_screen.dart';
+import 'package:tag/feature/report/view/report_screen.dart';
+import 'package:tag/feature/welcome/view/welcome_screen.dart';
+import 'package:tag/shared/widget/bottom_nav.dart';
+import '../../feature/home/view/home_screen.dart';
 import '../../feature/onboard/controller/onboard_cubit.dart';
-import '../../main.dart';
 import 'package:flutter/material.dart';
 import '../../feature/splash/view/splash_screen.dart';
 import 'package:tag/feature/onboard/view/onboard_screen.dart';
@@ -18,8 +28,16 @@ class AppRoutes {
   static const String onboard = '/onboard';
   static const String welcome = '/welcome';
   static const String login = '/login';
-  static const String signup = '/signup';
+  static const String createAccount = '/createAccount';
+  static const String otpVerify = '/otpVerify';
+  static const String bottomNav = '/bottomNav';
   static const String home = '/home';
+  static const String bol = '/bol'; //===> bol = bill of loading
+  static const String camScan = '/camScan';
+  static const String notification = '/notification';
+  static const String load = '/load';
+  static const String report = '/report';
+  static const String profile = '/profile';
 
   ///
   /// ==============Route map
@@ -31,8 +49,21 @@ class AppRoutes {
       child: const OnboardingScreen(),
     ),
     welcome: (context) => const WelcomeScreen(),
-    login: (context) => const WelcomeScreen(),
-    signup: (context) => const WelcomeScreen(),
+    login: (context) => const LoginScreen(),
+    createAccount: (context) => const CreateAccountScreen(),
+    otpVerify: (context) => const OtpVerificationScreen(),
+    bottomNav: (context) => const BottomNav(),
     home: (context) => const HomeScreen(),
+    // bol: (context) => const BillOfLoadingScreen(imagePath: imagePath ?? ''),
+    bol: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as String?;
+      return BillOfLoadingScreen(imagePath: args ?? '');
+    },
+    camScan: (context) => const CameraScanScreen(),
+    notification: (context) => const NotificationScreen(),
+    load: (context) => const LoadScreen(),
+    report: (context) => const ReportScreen(),
+    profile: (context) => const ProfileScreen(),
+
   };
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tag/core/theme/app_colors.dart';
 import 'package:tag/core/theme/app_text_style.dart';
 
+import '../../../core/constants/app_routes.dart';
 import '../../../shared/components/Custom_Elevated_Button.dart';
 import '../../../shared/components/custom_background.dart';
 
@@ -13,12 +15,13 @@ class LoginScreen extends StatefulWidget {
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
+
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'a@gmail.com');
+  final _passwordController = TextEditingController(text: '123456');
   bool _obscurePassword = true;
 
   @override
@@ -49,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         // SVG Image
                         SizedBox(
-                          height: 120,
+                          height: 150,
                           child: SvgPicture.asset(
                             'assets/images/splash_image.svg',
                             fit: BoxFit.contain,
@@ -62,8 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Welcome to T.A.G',
                           style: AppTextStyle.BricolageGrotesque_24pt_Regular.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize: 28,
-                            color: const Color(0xFF1E3A5F),
+                            fontSize: 25,
+                            color:  Colors.black,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -71,8 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Subtitle
                         Text(
                           'Log in to access your account',
-                          style: AppTextStyle.BricolageGrotesque_24pt_Regular.copyWith(
-                            fontSize: 14,
+                          style: AppTextStyle.SFProDisplay_Regular.copyWith(
+                            fontSize: 20,
                             color: Colors.grey[600],
                           ),
                         ),
@@ -108,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        hintText: 'Enter your full name', // Keeping design text
+                        hintText: 'Enter your email',
                         hintStyle: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -151,25 +154,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: const Color(0xFF1E3A5F),
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          debugPrint('Forgot Password pressed');
-                          // Navigator.pushNamed(context, '/forgot-password');
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 0),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(
-                          'Forget Password?',
-                          style: TextStyle(
-                            color: const Color(0xFF1E3A5F),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -179,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -189,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        hintText: 'Enter your password', // Updated hint to match context
+                        hintText: 'Enter your password',
                         hintStyle: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -230,17 +214,39 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
-
-                  // Login Button
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          debugPrint('Forgot Password pressed');
+                          // Navigator.pushNamed(context, '/forgot-password');
+                        },
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          overlayColor: Colors.transparent,
+                        ),
+                        child: Text(
+                          'Forget Password?',
+                          style: AppTextStyle.SFProDisplay_Regular.copyWith(
+                            fontSize: 12,
+                          )
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.07),
+                  ///--- Login Button
                   CustomElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         debugPrint('Email: ${_emailController.text}');
                         debugPrint('Password: ${_passwordController.text}');
 
-                        // Example: Navigate to Home or Dashboard
-                        // Navigator.pushNamed(context, '/home');
+                        Navigator.pushNamed(context, AppRoutes.bottomNav);
                       }
                     },
                     buttonText: 'Log in',
@@ -269,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       GestureDetector(
                         onTap: () {
                           // Navigate back to Welcome Screen or to Create Account
-                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, AppRoutes.createAccount);
                           debugPrint('Sign Up pressed');
                         },
                         child: Text(

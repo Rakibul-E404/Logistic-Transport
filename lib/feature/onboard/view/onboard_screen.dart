@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     final state = _cubit.state;
 
     if (_cubit.isLastPage(state)) {
-      Navigator.pushReplacementNamed(context, AppRoutes.welcome);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.welcome, (route) => false);
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
