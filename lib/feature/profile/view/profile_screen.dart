@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tag/core/constants/app_routes.dart';
 import 'package:tag/core/theme/app_text_style.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -119,7 +120,9 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: 'assets/icons/account_settings.svg', // Your SVG
                 title: 'Account Settings',
                 subtitle: 'Edit name, password, and security',
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.accoutnSettings);
+                },
               ),
               _buildMenuItem(
                 iconPath: 'assets/icons/manage_drivers.svg', // Your SVG

@@ -8,6 +8,7 @@ import 'package:tag/feature/bill_of_loading/scan_bill_of_loading.dart';
 import 'package:tag/feature/home/model/camera_scanner.dart';
 import 'package:tag/feature/load/view/load_screen.dart';
 import 'package:tag/feature/notification/view/notification_screen.dart';
+import 'package:tag/feature/profile/view/account_settings/account_settings_screen.dart';
 import 'package:tag/feature/profile/view/profile_screen.dart';
 import 'package:tag/feature/report/view/report_screen.dart';
 import 'package:tag/feature/welcome/view/welcome_screen.dart';
@@ -40,6 +41,7 @@ class AppRoutes {
   static const String load = '/load';
   static const String report = '/report';
   static const String profile = '/profile';
+  static const String accoutnSettings = '/accoutnSettings';
 
   ///
   /// ==============Route map
@@ -67,6 +69,7 @@ class AppRoutes {
     load: (context) => const LoadScreen(),
     report: (context) => const ReportScreen(),
     profile: (context) => const ProfileScreen(),
+    accoutnSettings: (context) => const AccountSettingScreen(),
 
   };
 }
