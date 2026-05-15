@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tag/feature/auth/view/create_account_screen.dart';
 import 'package:tag/feature/auth/view/login_screen.dart';
 import 'package:tag/feature/auth/view/otp_verify_screen.dart';
-import 'package:tag/feature/home/bill_of_loading/bill_of_loading.dart';
+import 'package:tag/feature/bill_of_loading/add_loading.dart';
+import 'package:tag/feature/bill_of_loading/scan_bill_of_loading.dart';
 import 'package:tag/feature/home/model/camera_scanner.dart';
 import 'package:tag/feature/load/view/load_screen.dart';
 import 'package:tag/feature/notification/view/notification_screen.dart';
+import 'package:tag/feature/profile/view/account_settings/account_settings_screen.dart';
 import 'package:tag/feature/profile/view/profile_screen.dart';
 import 'package:tag/feature/report/view/report_screen.dart';
 import 'package:tag/feature/welcome/view/welcome_screen.dart';
@@ -32,12 +34,14 @@ class AppRoutes {
   static const String otpVerify = '/otpVerify';
   static const String bottomNav = '/bottomNav';
   static const String home = '/home';
-  static const String bol = '/bol'; //===> bol = bill of loading
+  static const String scanBillOfLoading = '/scanBillOfLoading';
+  static const String addLoading = '/addLoading';
   static const String camScan = '/camScan';
   static const String notification = '/notification';
   static const String load = '/load';
   static const String report = '/report';
   static const String profile = '/profile';
+  static const String accoutnSettings = '/accoutnSettings';
 
   ///
   /// ==============Route map
@@ -55,15 +59,17 @@ class AppRoutes {
     bottomNav: (context) => const BottomNav(),
     home: (context) => const HomeScreen(),
     // bol: (context) => const BillOfLoadingScreen(imagePath: imagePath ?? ''),
-    bol: (context) {
+    scanBillOfLoading: (context) {
       final args = ModalRoute.of(context)?.settings.arguments as String?;
-      return BillOfLoadingScreen(imagePath: args ?? '');
+      return ScanBillOfLoadingScreen(imagePath: args ?? '');
     },
+    addLoading: (context) => const AddLoadScreen(),
     camScan: (context) => const CameraScanScreen(),
     notification: (context) => const NotificationScreen(),
     load: (context) => const LoadScreen(),
     report: (context) => const ReportScreen(),
     profile: (context) => const ProfileScreen(),
+    accoutnSettings: (context) => const AccountSettingScreen(),
 
   };
 }

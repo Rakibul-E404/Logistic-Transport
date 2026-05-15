@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tag/core/constants/app_routes.dart';
 import 'package:tag/core/theme/app_text_style.dart';
-import 'package:tag/feature/home/bill_of_loading/bill_of_loading.dart';
+import 'package:tag/feature/bill_of_loading/scan_bill_of_loading.dart';
 import 'package:tag/feature/notification/view/notification_screen.dart';
 import '../../../shared/widget/build_action_button.dart';
 import '../../../shared/widget/build_load_card.dart';
@@ -16,9 +16,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FC),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,7 +53,7 @@ class HomeScreen extends StatelessWidget {
                         context,
                         AppRoutes.notification,
                       );
-
+          
                     },
                     child: Container(
                       width: 48,
@@ -80,9 +80,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
+          
               const SizedBox(height: 24),
-
+          
               // Net Profit Card - Large Dark Card
               Container(
                 width: double.infinity,
@@ -193,9 +193,9 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
+          
               const SizedBox(height: 24),
-
+          
               // Action Buttons Row - White cards
               Row(
                 children: [
@@ -215,19 +215,21 @@ class HomeScreen extends StatelessWidget {
                     child: buildActionButton(
                       title: 'Add Load',
                       icon: 'assets/icons/add.svg',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.addLoading);
+                      },
                     ),
                   ),
                 ],
               ),
-
+          
               const SizedBox(height: 24),
-
+          
               // Status Overview Section - USING THE SCROLLABLE METHOD
               buildStatusSection(),
-
+          
               const SizedBox(height: 24),
-
+          
               // Assigned Load Title
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -259,9 +261,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
+          
               const SizedBox(height: 12),
-
+          
               // Assigned Load Cards
               Column(
                 children: [
@@ -284,9 +286,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
+          
               const SizedBox(height: 24),
-
+          
               // My Loads Title
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -318,9 +320,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
+          
               const SizedBox(height: 12),
-
+          
               // My Loads Cards
               Column(
                 children: [
@@ -343,7 +345,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
+          
               const SizedBox(height: 20),
             ],
           ),
@@ -376,15 +378,18 @@ class HomeScreen extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: _getStatusData().length,
-            separatorBuilder: (_, __) => const SizedBox(width: 14),
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (context, index) {
               final data = _getStatusData()[index];
 
-              return buildStatusCard(
-                title: data['title'],
-                count: data['count'],
-                icon: data['icon'],
-                color: data['color'],
+              return SizedBox(
+                width: 160,
+                child: buildStatusCard(
+                  title: data['title'],
+                  count: data['count'],
+                  icon: data['icon'],
+                  color: data['color'],
+                ),
               );
             },
           ),
@@ -392,6 +397,7 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
+
 
   // Status Data
   List<Map<String, dynamic>> _getStatusData() {
@@ -409,7 +415,7 @@ class HomeScreen extends StatelessWidget {
         'color': const Color(0xFFEAAA08),
       },
       {
-        'title': 'Missing Expense',
+        'title': 'Expense',
         'count': '12',
         'icon': 'assets/icons/expense.svg',
         'color': const Color(0xFFD92D20),
