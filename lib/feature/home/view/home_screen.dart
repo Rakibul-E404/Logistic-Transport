@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tag/core/constants/app_routes.dart';
 import 'package:tag/core/theme/app_text_style.dart';
-import 'package:tag/feature/home/bill_of_loading/bill_of_loading.dart';
+import 'package:tag/feature/bill_of_loading/scan_bill_of_loading.dart';
 import 'package:tag/feature/notification/view/notification_screen.dart';
 import '../../../shared/widget/build_action_button.dart';
 import '../../../shared/widget/build_load_card.dart';
@@ -215,7 +215,9 @@ class HomeScreen extends StatelessWidget {
                     child: buildActionButton(
                       title: 'Add Load',
                       icon: 'assets/icons/add.svg',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.addLoading);
+                      },
                     ),
                   ),
                 ],

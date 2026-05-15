@@ -6,14 +6,51 @@ import 'package:tag/core/theme/app_text_style.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../shared/components/Custom_Elevated_Button.dart';
 
-class BillOfLoadingScreen extends StatelessWidget {
+class ScanBillOfLoadingScreen extends StatefulWidget {
   final String imagePath;
 
-  const BillOfLoadingScreen({super.key, required this.imagePath});
+  const ScanBillOfLoadingScreen({super.key, required this.imagePath});
+
+  @override
+  State<ScanBillOfLoadingScreen> createState() => _ScanBillOfLoadingScreenState();
+}
+
+class _ScanBillOfLoadingScreenState extends State<ScanBillOfLoadingScreen> {
+  // Editable fields
+  late TextEditingController loadIdController;
+  late TextEditingController companyController;
+  late TextEditingController pickupLocationController;
+  late TextEditingController deliveryLocationController;
+  late TextEditingController shipmentDateController;
+  late TextEditingController rateController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers with default values
+    loadIdController = TextEditingController(text: 'LD-882941-X');
+    companyController = TextEditingController(text: 'SwiftLogix Global');
+    pickupLocationController = TextEditingController(text: '1422 Industrial Way, Chicago, IL');
+    deliveryLocationController = TextEditingController(text: '9900 Logistics Blvd, Dallas, TX');
+    shipmentDateController = TextEditingController(text: '05/24/2024');
+    rateController = TextEditingController(text: '2,450.00');
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers to prevent memory leaks
+    loadIdController.dispose();
+    companyController.dispose();
+    pickupLocationController.dispose();
+    deliveryLocationController.dispose();
+    shipmentDateController.dispose();
+    rateController.dispose();
+    super.dispose();
+  }
 
   /// Show captured image in full-screen dialog
   void _viewOriginalImage(BuildContext context) {
-    if (imagePath.isEmpty) {
+    if (widget.imagePath.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No image available'),
@@ -37,7 +74,7 @@ class BillOfLoadingScreen extends StatelessWidget {
               minScale: 0.5,
               maxScale: 4.0,
               child: Image.file(
-                File(imagePath),
+                File(widget.imagePath),
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
                   return Center(
@@ -193,21 +230,22 @@ class BillOfLoadingScreen extends StatelessWidget {
     );
   }
 
-  /// Single Info Field Widget with full style support
-  Widget _buildInfoField({
+  /// Single Editable Info Field Widget
+  Widget _buildEditableInfoField({
     required String label,
-    required String value,
+    required TextEditingController controller,
     IconData? icon,
     Color? valueColor,
-    TextStyle? customLabelStyle,
-    TextStyle? customValueStyle,
+    TextInputType? keyboardType,
+    bool isEnabled = true,
+    String? hintText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: (customLabelStyle ?? AppTextStyle.SFProDisplay_Regular).copyWith(
+          style: AppTextStyle.SFProDisplay_Regular.copyWith(
             fontSize: 11,
             color: const Color(0xFF6B7280),
             fontWeight: FontWeight.w500,
@@ -217,10 +255,13 @@ class BillOfLoadingScreen extends StatelessWidget {
         const SizedBox(height: 6),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F4F6),
+            color: isEnabled ? const Color(0xFFF3F4F6) : Colors.grey[50],
             borderRadius: BorderRadius.circular(8),
+            border: isEnabled
+                ? Border.all(color: Colors.transparent)
+                : Border.all(color: Colors.grey[200]!),
           ),
           child: Row(
             children: [
@@ -229,13 +270,26 @@ class BillOfLoadingScreen extends StatelessWidget {
                 const SizedBox(width: 6),
               ],
               Expanded(
-                child: Text(
-                  value,
-                  style: (customValueStyle ?? AppTextStyle.SFProDisplay_Regular).copyWith(
+                child: TextField(
+                  controller: controller,
+                  enabled: isEnabled,
+                  style: AppTextStyle.SFProDisplay_Regular.copyWith(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: valueColor ?? const Color(0xFF1E3A5F),
                   ),
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: AppTextStyle.SFProDisplay_Regular.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[400],
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  keyboardType: keyboardType,
                 ),
               ),
             ],
@@ -245,18 +299,19 @@ class BillOfLoadingScreen extends StatelessWidget {
     );
   }
 
-  /// Card with two info fields
-  Widget _buildDoubleInfoCard({
+  /// Card with two editable info fields
+  Widget _buildEditableDoubleInfoCard({
     required String label1,
-    required String value1,
+    required TextEditingController controller1,
     required String label2,
-    required String value2,
+    required TextEditingController controller2,
     IconData? icon1,
     IconData? icon2,
     Color? valueColor1,
     Color? valueColor2,
-    TextStyle? labelStyle,
-    TextStyle? valueStyle,
+    TextInputType? keyboardType1,
+    TextInputType? keyboardType2,
+    bool isEnabled = true,
   }) {
     return Container(
       width: double.infinity,
@@ -271,35 +326,41 @@ class BillOfLoadingScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoField(
+          _buildEditableInfoField(
             label: label1,
-            value: value1,
+            controller: controller1,
             icon: icon1,
             valueColor: valueColor1,
-            customLabelStyle: labelStyle,
-            customValueStyle: valueStyle,
+            keyboardType: keyboardType1,
+            isEnabled: isEnabled,
           ),
           const SizedBox(height: 16),
-          _buildInfoField(
+          _buildEditableInfoField(
             label: label2,
-            value: value2,
+            controller: controller2,
             icon: icon2,
             valueColor: valueColor2,
-            customLabelStyle: labelStyle,
-            customValueStyle: valueStyle,
+            keyboardType: keyboardType2,
+            isEnabled: isEnabled,
           ),
         ],
       ),
     );
   }
 
-  /// Location Card with connecting line
-  Widget _buildLocationCard() {
+  /// Location Card with editable fields
+  Widget _buildEditableLocationCard({
+    bool isEnabled = true,
+  }) {
     const double iconSize = 32.0;
     const double lineWidth = 2.0;
     const double midGap = 20.0;
 
-    Widget locationField({required String label, required String value}) {
+    Widget editableLocationField({
+      required String label,
+      required TextEditingController controller,
+      bool isEnabled = true,
+    }) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -315,18 +376,33 @@ class BillOfLoadingScreen extends StatelessWidget {
           const SizedBox(height: 6),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
+              color: isEnabled ? const Color(0xFFF3F4F6) : Colors.grey[50],
               borderRadius: BorderRadius.circular(8),
+              border: isEnabled
+                  ? Border.all(color: Colors.transparent)
+                  : Border.all(color: Colors.grey[200]!),
             ),
-            child: Text(
-              value,
-              style: AppTextStyle.SFProDisplay_Regular.copyWith(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF1E3A5F),
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    enabled: isEnabled,
+                    style: AppTextStyle.SFProDisplay_Regular.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1E3A5F),
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -352,7 +428,6 @@ class BillOfLoadingScreen extends StatelessWidget {
               width: iconSize,
               child: Stack(
                 children: [
-                  // Connecting line drawn BEHIND the icons
                   Positioned(
                     top: iconSize / 2,
                     bottom: iconSize / 2,
@@ -365,7 +440,6 @@ class BillOfLoadingScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Icons drawn ON TOP of the line
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -390,14 +464,16 @@ class BillOfLoadingScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  locationField(
+                  editableLocationField(
                     label: 'PICKUP LOCATION',
-                    value: '1422 Industrial Way, Chicago, IL',
+                    controller: pickupLocationController,
+                    isEnabled: isEnabled,
                   ),
                   const SizedBox(height: midGap),
-                  locationField(
+                  editableLocationField(
                     label: 'DELIVERY LOCATION',
-                    value: '9900 Logistics Blvd, Dallas, TX',
+                    controller: deliveryLocationController,
+                    isEnabled: isEnabled,
                   ),
                 ],
               ),
@@ -406,6 +482,33 @@ class BillOfLoadingScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Save all edited data
+  void _saveAndContinue() {
+    // Get all edited values
+    final String loadId = loadIdController.text;
+    final String company = companyController.text;
+    final String pickupLocation = pickupLocationController.text;
+    final String deliveryLocation = deliveryLocationController.text;
+    final String shipmentDate = shipmentDateController.text;
+    final String rate = rateController.text;
+
+    // Here you can save to database, API, etc.
+    debugPrint('=== SAVED DATA ===');
+    debugPrint('Load ID: $loadId');
+    debugPrint('Company/Broker: $company');
+    debugPrint('Pickup Location: $pickupLocation');
+    debugPrint('Delivery Location: $deliveryLocation');
+    debugPrint('Shipment Date: $shipmentDate');
+    debugPrint('Rate: $rate');
+    debugPrint('Image Path: ${widget.imagePath}');
+    debugPrint('==================');
+
+
+
+    // Navigate back or to next screen
+    Navigator.pop(context);
   }
 
   @override
@@ -491,9 +594,9 @@ class BillOfLoadingScreen extends StatelessWidget {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              if (imagePath.isNotEmpty && File(imagePath).existsSync())
+                              if (widget.imagePath.isNotEmpty && File(widget.imagePath).existsSync())
                                 Image.file(
-                                  File(imagePath),
+                                  File(widget.imagePath),
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
                                 )
@@ -581,36 +684,39 @@ class BillOfLoadingScreen extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-                    // CARD 1: LOAD ID + COMPANY/BROKER
-                    _buildDoubleInfoCard(
+                    // CARD 1: LOAD ID + COMPANY/BROKER (Editable)
+                    _buildEditableDoubleInfoCard(
                       label1: 'LOAD ID',
-                      value1: 'LD-882941-X',
+                      controller1: loadIdController,
                       label2: 'COMPANY/BROKER',
-                      value2: 'SwiftLogix Global',
+                      controller2: companyController,
+                      icon1: Icons.confirmation_number_outlined,
+                      icon2: Icons.business_outlined,
                     ),
 
                     const SizedBox(height: 12),
 
-                    // CARD 2: PICKUP + DELIVERY (Stack-connected line)
-                    _buildLocationCard(),
+                    // CARD 2: PICKUP + DELIVERY LOCATIONS (Editable)
+                    _buildEditableLocationCard(),
 
                     const SizedBox(height: 12),
 
-                    // CARD 3: SHIPMENT DATE + RATE
-                    _buildDoubleInfoCard(
+                    // CARD 3: SHIPMENT DATE + RATE (Editable)
+                    _buildEditableDoubleInfoCard(
                       label1: 'SHIPMENT DATE',
-                      value1: '05/24/2024',
-                      icon1: Icons.calendar_today_outlined,
+                      controller1: shipmentDateController,
                       label2: 'RATE (\$)',
-                      value2: '2,450.00',
+                      controller2: rateController,
+                      icon1: Icons.calendar_today_outlined,
                       icon2: Icons.attach_money,
+                      keyboardType2: TextInputType.number,
                     ),
 
                     const SizedBox(height: 24),
 
                     // Save Load & Continue Button
                     CustomElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: _saveAndContinue,
                       buttonText: 'Save Load & Continue',
                       textStyle: AppTextStyle.SFProDisplay_Regular,
                       backgroundColor: AppColors.primaryColor,
@@ -640,7 +746,7 @@ class BillOfLoadingScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      icon: const Icon(Icons.refresh),
+                      icon: const Icon(Icons.document_scanner_outlined),
                       gap: 8,
                     ),
 

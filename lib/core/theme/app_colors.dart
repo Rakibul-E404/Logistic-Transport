@@ -26,6 +26,7 @@ class AppColors {
 
   ///solid color
   static const Color whiteColor = Colors.white;
+  static const Color textFieldWhiteColor = Color(0xFFF3F4F6);
   static const Color blackColor = Colors.black;
 
 
