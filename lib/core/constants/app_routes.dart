@@ -6,7 +6,10 @@ import 'package:tag/feature/auth/view/otp_verify_screen.dart';
 import 'package:tag/feature/bill_of_loading/add_loading.dart';
 import 'package:tag/feature/bill_of_loading/scan_bill_of_loading.dart';
 import 'package:tag/feature/home/model/camera_scanner.dart';
+import 'package:tag/feature/load/view/bol_screen.dart';
+import 'package:tag/feature/load/view/load_details_screen.dart';
 import 'package:tag/feature/load/view/load_screen.dart';
+import 'package:tag/feature/load/view/pod_screen.dart';
 import 'package:tag/feature/notification/view/notification_screen.dart';
 import 'package:tag/feature/profile/view/account_settings/account_settings_screen.dart';
 import 'package:tag/feature/profile/view/profile_screen.dart';
@@ -35,6 +38,9 @@ class AppRoutes {
   static const String bottomNav = '/bottomNav';
   static const String home = '/home';
   static const String scanBillOfLoading = '/scanBillOfLoading';
+  static const String loadDetails = '/loadDetails';
+  static const String billOfLoad = '/billOfLoad';
+  static const String proofOfDelivery = '/proofOfDelivery';
   static const String addLoading = '/addLoading';
   static const String camScan = '/camScan';
   static const String notification = '/notification';
@@ -63,6 +69,9 @@ class AppRoutes {
       final args = ModalRoute.of(context)?.settings.arguments as String?;
       return ScanBillOfLoadingScreen(imagePath: args ?? '');
     },
+    loadDetails: (context) => const LoadDetailsScreen(),
+    billOfLoad: (context) => const BOLScreen(),
+    proofOfDelivery: (context) => const PODScreen(),
     addLoading: (context) => const AddLoadScreen(),
     camScan: (context) => const CameraScanScreen(),
     notification: (context) => const NotificationScreen(),

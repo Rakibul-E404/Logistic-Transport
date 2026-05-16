@@ -48,6 +48,7 @@ dependencies:
   intl: ^0.20.2
   google_mlkit_document_scanner: ^0.4.1
   image_picker: ^1.2.2
+  signature: ^6.3.0
 
 dev_dependencies:
   flutter_test:

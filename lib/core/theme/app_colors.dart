@@ -16,6 +16,7 @@ class AppColors {
   static const Color tabBarColor = Color(0XFFE2E8F0);
   static const Color textGreyColor = Color(0XFF64748B);
   static const Color lightBlueColor = Color(0XFFE2E8F0);
+  static const Color buttonColor = Color(0XFFEEDCCE);
 
 
   /// Loader gradient colors (added from the animation)

@@ -505,10 +505,8 @@ class _ScanBillOfLoadingScreenState extends State<ScanBillOfLoadingScreen> {
     debugPrint('Image Path: ${widget.imagePath}');
     debugPrint('==================');
 
+    Navigator.pushNamed(context, AppRoutes.loadDetails);
 
-
-    // Navigate back or to next screen
-    Navigator.pop(context);
   }
 
   @override
