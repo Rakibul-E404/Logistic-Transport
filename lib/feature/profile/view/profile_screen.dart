@@ -121,7 +121,10 @@ class ProfileScreen extends StatelessWidget {
               iconPath: 'assets/icons/app_preferences.svg',
               title: 'App Preferences',
               subtitle: 'Language, Units, and others',
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.appPreferencesScreen);
+
+              },
             ),
             _buildMenuItem(
               iconPath: 'assets/icons/help_support.svg',
@@ -136,7 +139,8 @@ class ProfileScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // Handle logout
+                  Navigator.pushNamed(context, AppRoutes.login);
+
                 },
                 icon: SvgPicture.asset(
                   'assets/icons/logout.svg',

@@ -13,6 +13,7 @@ import 'package:tag/feature/load/view/pod_screen.dart';
 import 'package:tag/feature/notification/view/notification_screen.dart';
 import 'package:tag/feature/profile/view/account_settings/account_settings_screen.dart';
 import 'package:tag/feature/profile/view/accountant/accountant_screen.dart';
+import 'package:tag/feature/profile/view/app_preferences/app_preference_screen.dart';
 import 'package:tag/feature/profile/view/manage_drivers/drivers_screen.dart';
 import 'package:tag/feature/profile/view/profile_screen.dart';
 import 'package:tag/feature/profile/view/subscription/subscription_screen.dart';
@@ -52,7 +53,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String accoutnSettings = '/accoutnSettings';
   static const String subscriptionScreen = '/subscriptionScreen';
-  static const String subscriptionScreen = '/subscriptionScreen';
+  static const String appPreferencesScreen = '/appPreferencesScreen';
   static const String sendToAccountantScreen = '/sendToAccountantScreen';
   static const String drivers = '/drivers';
 
@@ -87,7 +88,7 @@ class AppRoutes {
     profile: (context) => const ProfileScreen(),
     accoutnSettings: (context) => const AccountSettingScreen(),
     subscriptionScreen: (context) => const SubscriptionScreen(),
-    subscriptionScreen: (context) => const SubscriptionScreen(),
+    appPreferencesScreen: (context) => const AppPreferencesScreen(),
     sendToAccountantScreen: (context) => const SendToAccountantScreen(),
     drivers: (context) => const DriversScreen(),
 
